@@ -7,6 +7,9 @@
   "github": {
     "username": "{{username}}",
     "password": "{{password}}",
-    "repo": "{{repo}}"
+    "repo": "{{repo}}",
+    "organization": null,
+    "host": null,
+    "pathPrefix": null
   }
 }

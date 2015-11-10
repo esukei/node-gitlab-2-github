@@ -32,8 +32,8 @@ if (settings.gitlab.projectID === null) {
     // optional
     //debug: true,
     protocol: "https",
-    host: "api.github.com",
-    pathPrefix: "",
+    host: settings.github.host || "api.github.com",
+    pathPrefix: settings.github.pathPrefix || "",
     timeout: 5000,
     headers: {
       "user-agent": "node-gitlab-2-github" // GitHub is happy with a unique user agent
@@ -58,7 +58,7 @@ if (settings.gitlab.projectID === null) {
       console.log('\n\n\n\n\n\n\n>>>>');
       console.log(milestoneDataMapped);
       console.log('\n\n\n\n\n\n\n');
-      
+
       async.each(data, function(item, cb) {
         if (milestoneDataMapped.indexOf(item.title) < 0) {
           console.log('Creating new Milestone', item.title);
@@ -140,7 +140,7 @@ function createAllIssuesAndComments(milestoneData, callback) {
 
 function getAllGHMilestones(callback) {
   github.issues.getAllMilestones({
-    user: settings.github.username,
+    user: settings.github.organization || settings.github.username,
     repo: settings.github.repo
   }, function(err, milestoneDataOpen) {
     if(err){
@@ -149,7 +149,7 @@ function getAllGHMilestones(callback) {
         exit(1);
       }
     github.issues.getAllMilestones({
-      user: settings.github.username,
+      user: settings.github.organization || settings.github.username,
       repo: settings.github.repo,
       state: 'closed'
     }, function(err, milestoneDataClosed) {
@@ -182,7 +182,7 @@ function getAllGHIssues(callback) {
     return hasNext(lastItem)
   }, function(cb) {
     github.issues.repoIssues({
-      user: settings.github.username,
+      user: settings.github.organization || settings.github.username,
       repo: settings.github.repo,
       state: 'all',
       per_page: 100,
@@ -230,7 +230,7 @@ function findMileStoneforTitle(milestoneData, title) {
 
 function createIssueAndComments(item, callback) {
   var props = {
-    user: settings.github.username,
+    user: settings.github.organization || settings.github.username,
     repo: settings.github.repo,
     title: item.title.trim(),
     body: item.description
@@ -270,7 +270,7 @@ function makeCorrectState(ghIssueData, item, callback) {
 
   // TODO get props
   var props = {
-    user: settings.github.username,
+    user: settings.github.organization || settings.github.username,
     repo: settings.github.repo,
     number: ghIssueData.number,
     state: 'closed',
@@ -300,7 +300,7 @@ function createAllIssueComments(projectID, issueID, newIssueData, callback) {
           return cb();
         } else {
           github.issues.createComment({
-            user: settings.github.username,
+            user: settings.github.organization || settings.github.username,
             repo: settings.github.repo,
             number: newIssueData.number,
             body: item.body
@@ -316,7 +316,7 @@ function createAllIssueComments(projectID, issueID, newIssueData, callback) {
 
 function createMilestone(data, cb) {
   github.issues.createMilestone({
-    user: settings.github.username,
+    user: settings.github.organization || settings.github.username,
     repo: settings.github.repo,
     title: data.title,
     description: data.description,
